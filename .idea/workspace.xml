@@ -20,6 +20,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "nitschkaa"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:nitschkaa/conversion_bot.git",
+    "accountId": "1b3243e5-4c1d-4c44-be63-1c3cfc1d2a0e"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -62,7 +74,7 @@
       <updated>1739031884014</updated>
       <workItem from="1739031885042" duration="9000" />
       <workItem from="1739031929144" duration="1451000" />
-      <workItem from="1739034237405" duration="9114000" />
+      <workItem from="1739034237405" duration="9518000" />
     </task>
     <servers />
   </component>
