@@ -11,7 +11,7 @@ from aiogram.utils.formatting import Text
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token='7604779913:AAEnJdFy0PHpe9nF9OD-ygM5DH7Bm1jVCj4')
+bot = Bot(token='')
 dp = Dispatcher()
 
 class CurrencyConverter(StatesGroup):
@@ -80,7 +80,7 @@ async def get_amount(message: types.Message, state: FSMContext):
 
 
 async def convert_currency(from_currency: str, to_currency: str, amount: float):
-    url = f"https://v6.exchangerate-api.com/v6/3be3a092e3659483327c5f86/latest/{from_currency}"
+    url = f"https://v6.exchangerate-api.com/v6/''/latest/{from_currency}"
 
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
