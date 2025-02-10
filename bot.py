@@ -7,6 +7,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 import httpx  # Для работы с API
 from aiogram import Bot, Dispatcher, types, F
+from aiogram.utils.formatting import Text
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,13 +22,12 @@ class CurrencyConverter(StatesGroup):
 button1 = KeyboardButton(text="USD")
 button2 = KeyboardButton(text="EUR")
 button3 = KeyboardButton(text="RUB")
-button4 = KeyboardButton(text="BTC")
+button4 = KeyboardButton(text="GBP")
 
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[[button1, button2, button3, button4]],  # Кнопки должны быть вложены в список списков
     resize_keyboard=True
 )
-
 
 @dp.message(CommandStart())
 async def start(message: Message):
@@ -36,30 +36,31 @@ async def start(message: Message):
 @dp.message(Command('convert'))
 async def convert(message: Message, state: FSMContext):
     await message.answer('Выберете валюту из которой конвертируем', reply_markup=main_keyboard)
-    await state.set_state(CurrencyConverter.from_currency) # Устанавливаем состояние "currency"
+    await state.set_state(CurrencyConverter.from_currency) # Устанавливаем состояние "from_currency"
 
-@dp.message(F.state == CurrencyConverter.from_currency)
+@dp.message(CurrencyConverter.from_currency)
 async def get_convert(message: types.Message, state: FSMContext):
     await state.update_data(from_currency=message.text)
     await message.answer("Выберите валюту, в которую нужно конвертировать", reply_markup=main_keyboard)
-    await state.set_state(CurrencyConverter.to_currency)  # Переходим на состояние "convert"
+    await state.set_state(CurrencyConverter.to_currency)  # Переходим на состояние "to_currency"
 
-@dp.message(F.state == CurrencyConverter.to_currency)
+@dp.message(CurrencyConverter.to_currency)
 async def conversion(message: types.Message, state: FSMContext):
     await state.update_data(to_currency=message.text)
     await message.answer("Введите сумму: ")
     await state.set_state(CurrencyConverter.amount)
-
-
-@dp.message(F.state == CurrencyConverter.amount)
+#
+#
+@dp.message(CurrencyConverter.amount)
 async def get_amount(message: types.Message, state: FSMContext):
-    # if not message.text.replace('.', '', 1).isdigit():  # Проверяем, что введено число
-    #     await message.answer("Сумма должна быть числом! Введите ещё раз:")
-    #     return
+    try:
+        amount = float(message.text)  # Преобразуем текст в число
+    except ValueError:
+        await message.answer("Сумма должна быть числом! Введите ещё раз:")
+        return
 
     await state.update_data(amount=float(message.text))  # Сохраняем сумму
     data = await state.get_data()  # Получаем все введённые пользователем данные
-
     from_currency = data["from_currency"]
     to_currency = data["to_currency"]
     amount = data["amount"]
@@ -88,13 +89,12 @@ async def convert_currency(from_currency: str, to_currency: str, amount: float):
         return None
 
     data = response.json()
-    rates = data.get("rates", {})
+    print(data)
+    conversion_rates = data.get("conversion_rates", {})
+    to_currency = conversion_rates.get(to_currency, None)
 
-    if to_currency not in rates:
-        return None
 
-    conversion_rate = rates[to_currency]
-    return amount * conversion_rate  # Умножаем сумму на курс
+    return amount * to_currency  # Умножаем сумму на курс
 
 
 async def main():
